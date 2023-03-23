@@ -1,0 +1,70 @@
+METHOD 1 (FOR IDEMPOTENT FUNCTIONS)  - (IDEMPOTENT - f(A,A) = A) - O(1) for query
+
+lli n;
+cin>>n;
+lli a[n];
+rep(i,0,n)
+{
+    cin>>a[i];
+}
+lli s[n][25];
+for(lli i=0;i<n;i++)
+{
+    s[i][0] = a[i];
+}
+for(lli j=1;j<25;j++)
+{
+    for(lli i=0;i<n;i++)
+    {
+        lli r = i+(1<<j);
+        if(r>n) s[i][j] = s[i][j-1];
+        else s[i][j] = min(s[i][j-1],s[i+(1<<(j-1))][j-1]);
+     }
+}
+lli q;
+cin>>q;
+while(q--)
+{
+   lli l,r;
+   cin>>l>>r;
+   lli w = r-l+1;
+   lli h = log2(w);
+   lli ans = min(s[l][h],s[r-(1<<h)+1][h]);
+   cout<<ans<<endl;
+}
+
+METHOD 2 - O(logN) for query
+
+    lli n;
+    cin>>n;
+    lli a[n];
+    rep(i,0,n) cin>>a[i];
+    lli s[n][25];
+    for(lli i=0;i<n;i++)
+    {
+        s[i][0] = a[i];
+    }
+    for(lli j=1;j<25;j++)
+    {
+        for(lli i=0;i<n;i++)
+        {
+            lli r = i+(1<<j);
+            if(r>n) s[i][j] = s[i][j-1];
+            else s[i][j] = s[i][j-1]+s[i+(1<<(j-1))][j-1];
+        }
+    }
+    lli q;
+    cin>>q;
+    while(q--)
+    {
+        lli l,r;
+        cin>>l>>r;
+        lli sum = 0;
+        for (int j = 24; j >= 0; j--) {
+            if ((1 << j) <= r - l + 1) {
+                sum += s[l][j];
+                l += 1 << j;
+            }
+        }
+        cout<<sum<<endl;
+    }

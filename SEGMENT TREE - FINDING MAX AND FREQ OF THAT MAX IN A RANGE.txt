@@ -1,0 +1,89 @@
+const lli N = 2e5+10;
+lli a[N];
+pair<lli,lli> seg[4*N];
+
+pair<lli,lli> combine(pair<lli,lli> p1, pair<lli,lli> p2)
+{
+    if(p1.first>p2.first)
+    {
+        return p1;
+    }
+    else if(p1.first<p2.first)
+    {
+        return p2;
+    }
+    else
+    {
+        return {p1.first,p1.second+p2.second};
+    }
+}
+void build(lli idx, lli l, lli r)
+{
+    if(l == r)
+    {
+        seg[idx] = {a[l],1};
+        return;
+    }
+    lli mid = (l+r)/2;
+    build(2*idx+1,l,mid);
+    build(2*idx+2,mid+1,r);
+    seg[idx] = combine(seg[2*idx+1], seg[2*idx+2]);
+}
+pair<lli,lli> get_max(lli idx, lli l, lli r, lli ql, lli qr)
+{
+    if(ql>qr) return {-1e18,0};
+    if(l == ql && r == qr) return seg[idx];
+    lli mid = (l+r)/2;
+    return combine( get_max(2*idx+1,l,mid,ql,min(qr,mid)),
+                    get_max(2*idx+2,mid+1,r,max(ql,mid+1),qr) );
+}
+void upd(lli idx, lli l, lli r, lli pos, lli val)
+{
+    if(l == r)
+    {
+        seg[idx] = {val,1};
+        return;
+    }
+    lli mid = (l+r)/2;
+    if(pos<=mid)
+    {
+        upd(2*idx+1,l,mid,pos,val);
+    }
+    else 
+    {
+        upd(2*idx+2,mid+1,r,pos,val);
+    }
+    seg[idx] = combine(seg[2*idx+1],seg[2*idx+2]);
+}
+void solve()
+{
+    lli n;
+    cin>>n;
+
+    rep(i,0,n) cin>>a[i];
+
+    rep(i,0,4*n) seg[i] = {0,0};
+
+    build(0,0,n-1);
+
+    lli q;
+    cin>>q;
+    while(q--)
+    {
+        lli t;
+        cin>>t;
+        if(t==1)
+        {
+            lli pos,val;
+            cin>>pos>>val;
+            upd(0,0,n-1,pos,val);
+        }
+        else
+        {
+            lli l,r;
+            cin>>l>>r;
+            pair<lli,lli> p = get_max(0,0,n-1,l,r);
+            cout<<p.fi<<" "<<p.se<<endl;
+        }
+    }
+}

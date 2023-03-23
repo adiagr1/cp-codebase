@@ -1,0 +1,18 @@
+vector<int>divi[1000005];
+bool pr[1000005];
+
+void precalc()
+{
+    for(int i=2;i<=1000000;i++)
+    {
+        if(pr[i]==0)
+        {
+            for(int j=i;j<=1000000;j+=i)
+            {
+                pr[j]=1;
+                divi[j].push_back(i);
+            }
+        }
+    }
+}
+ 

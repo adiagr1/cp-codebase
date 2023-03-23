@@ -1,0 +1,18 @@
+const lli N = 2e5+10;
+lli par[N], sz[N];
+lli find(lli u)
+{
+    if(par[u] == u) return u;
+    else return par[u] = find(par[u]);
+}
+void merge(lli u, lli v)
+{
+    u = find(u);
+    v = find(v);
+    if(sz[u] > sz[v])
+    {
+        swap(u,v);
+    }
+    par[u] = v;
+    sz[v] += sz[u];
+}

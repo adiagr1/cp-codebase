@@ -1,0 +1,117 @@
+Cycle Detection for directed graph ->
+
+    bool hascycle(lli node){
+        
+	vis[node]=0;
+
+        for(auto x:adj[node]){
+
+            if(vis[x]==-1){
+                if(hascycle(x)) return true;
+            }
+            else if(vis[x]==0) return true;
+        }
+
+        vis[node]=1;
+        return false;
+    }
+    bool detectcycle(int n) {
+        lli vis[n+1];
+
+        for(lli i=1;i<=n;i++) vis[i]=-1;
+
+        for(lli i=0;i<n;i++){
+            if(vis[i]==-1){
+                if(hascycle(i)) return true;
+            }
+        }
+
+        return false;
+    }
+
+TOPOLOGICAL SORTING TEMPLATE - 
+
+stack<int> ST;
+ bool hascycle(lli node){
+        
+	vis[node]=0;
+
+        for(auto x:adj[node]){
+
+            if(vis[x]==-1){
+                if(hascycle(x)) return true;
+            }
+            else if(vis[x]==0) return true;
+        }
+	
+	ST.push(node);                                            /////////just added this one line to cycle detection and my stack of topological sorting is ready////////////	
+	
+        vis[node]=1;
+        return false;
+    }
+    bool detectcycle(int n) {
+        lli vis[n+1];
+
+        for(lli i=1;i<=n;i++) vis[i]=-1;
+
+        for(lli i=0;i<n;i++){
+            if(vis[i]==-1){
+                if(hascycle(i)) return true;
+            }
+        }
+
+        return false;
+    }
+
+KOSARAJU'S ALGO - 
+#define lli long long int
+	stack<lli> s;
+	vector<bool> visited;
+	vector<int> ad[5001];
+	void dfs1(lli u,vector<int> adj[]){
+	    visited[u]=true;
+	    for(auto x:adj[u]){
+	        if(!visited[x]){
+	            dfs1(x,adj);
+	        }
+	    }
+	    s.push(u);
+	}
+	void reverse(vector<int> adj[],lli V){
+	    for(lli i=0;i<V;i++){
+	        for(auto x:adj[i]){
+	           ad[x].push_back(i);
+	        }
+	    }
+	}
+	void dfs2(lli u){
+	    visited[u]=true;
+	    for(auto x:ad[u]){
+	        if(!visited[x]){
+	            dfs2(x);
+	        }
+	    }
+	}
+    int kosaraju(int V, vector<int> adj[])
+    {
+        visited = vector<bool>(V,false);
+        for(lli i=0;i<V;i++){
+            if(!visited[i]){
+                dfs1(i,adj);
+            }
+        }
+        reverse(adj,V);
+        for(lli i=0;i<V;i++){
+            visited[i]=false;
+        }
+        lli ans=0;
+        while(!s.empty()){
+            int x = s.top();
+            s.pop();
+            if(!visited[x]){
+                ans++;
+                dfs2(x);
+            }
+        }
+        return ans;
+    }

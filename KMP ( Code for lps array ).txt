@@ -1,0 +1,27 @@
+vector<lli> computelps(string s)
+{
+    vector<lli> v(s.length(), 0);
+    lli idx  = 0;
+    for(lli i = 1 ; i<s.length() ;)
+    {
+        if(s[i] == s[idx])
+        {
+            v[i] = idx + 1;
+            i++;
+            idx++;
+        }
+        else
+        {
+            if(idx != 0)
+            {
+                idx = v[idx-1];
+            }
+            else
+            {
+                v[i] = 0;
+                i++;
+            }
+        }
+    }
+    return v;
+}

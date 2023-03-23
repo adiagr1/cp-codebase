@@ -1,0 +1,102 @@
+NORMAL FENWICH TREE
+
+
+
+const lli N = 2e5+10;
+lli f[N];
+// 1-based indexing
+void upd(lli p, lli x)
+{   
+    while(p<N)
+    {
+        f[p] += x;         // change function accordingly
+        p += (p&(-p));
+    }
+}
+lli get(lli p)              // Returns ans for [1.....p]
+{
+    lli ans = 0;
+    while(p>0)
+    {
+        ans += f[p];        // change function accordingly
+        p -= (p&(-p));
+    }
+    return ans;
+}
+// inside solve
+
+rep(i,1,n+10) f[i] = 0; // change accordingly
+rep(i,1,n+1) upd(i,a[i]);
+
+
+
+
+
+
+
+
+
+FOR BOTH MIN AND MAX FENWICH TREES
+
+
+
+
+
+
+const lli N = 2e5+10;
+lli fmn[N], fmx[N];
+// 1-based indexing
+void updmn(lli p, lli x)
+{   
+    while(p<N)
+    {
+        fmn[p] = min(fmn[p],x);         // change function accordingly
+        p += (p&(-p));
+    }
+}
+lli getmn(lli p)              // Returns ans for [1.....p]
+{
+    lli ans = 1e18;
+    while(p>0)
+    {
+        ans = min(ans,fmn[p]);        // change function accordingly
+        p -= (p&(-p));
+    }
+    return ans;
+}
+void updmx(lli p, lli x)
+{   
+    while(p<N)
+    {
+        fmx[p] = max(fmx[p],x);         // change function accordingly
+        p += (p&(-p));
+    }
+}
+lli getmx(lli p)              // Returns ans for [1.....p]
+{
+    lli ans = 0;
+    while(p>0)
+    {
+        ans = max(ans,fmx[p]);        // change function accordingly
+        p -= (p&(-p));
+    }
+    return ans;
+}
+void solve()
+{
+    lli n;
+    cin>>n;
+    vi a(n);
+    rep(i,0,n)
+    {
+        cin>>a[i];
+    }
+    rep(i,0,n+10)
+    {
+        fmn[i] = 1e18, fmx[i] = -1e18;
+    }
+    rep(i,0,n)
+    {
+        updmn(i+1,a[i]), updmx(i+1,a[i]);
+    }
+}

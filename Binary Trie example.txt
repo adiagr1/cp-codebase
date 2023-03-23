@@ -1,0 +1,57 @@
+// Binary trie example
+
+struct trie
+{
+    lli cnt;
+    trie* child[2];
+    trie()
+    {
+        child[0] = child[1] = NULL;
+        cnt = 0;
+    }
+}*T = new trie;
+void upd(lli x)
+{
+    trie* curr = T;
+    for(lli i=30;i>=0;i--)
+    {
+        lli y = ((x>>i)&1);
+
+        if(curr->child[y]==NULL)
+        {
+            curr->child[y] = new trie();
+        }
+        curr = curr->child[y];
+        curr->cnt++;
+    }
+}
+void del(lli x)
+{
+    trie* curr = T;
+    for(lli i=30;i>=0;i--)
+    {
+        lli y = ((x>>i)&1);
+        curr = curr->child[y];
+        curr->cnt--;
+    }
+}
+lli maxxor(lli x)
+{
+    trie* curr = T;
+    lli ans = 0;
+    for(lli i=30;i>=0;i--)
+    {
+        lli y = ((x>>i)&1);
+
+        if(curr->child[1-y]&&curr->child[1-y]->cnt>0)
+        {
+            ans += (1ll<<i);
+            curr = curr->child[1-y];
+        }
+        else
+        {
+            curr = curr->child[y];
+        }
+    }
+    return ans;
+}

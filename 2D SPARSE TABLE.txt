@@ -1,0 +1,18 @@
+int st[n][m][10];
+int a[n][m];
+for(int i=0;i<n;i++){
+    for(int j=0;j<m;j++){
+        cin>>a[i][j];
+        st[i][j][0]=a[i][j];
+    }
+}
+for(int k=1;k<=log2(min(n,m));k++){
+    for(int i=0;i+(1<<k)<=n;i++){
+        for(int j=0;j+(1<<k)<=m;j++){
+            st[i][j][k]=min(min(st[i][j][k-1],st[i+(1<<(k-1))][j][k-1]),min(st[i][j+(1<<(k-1))][k-1],st[i+(1<<(k-1))][j+(1<<(k-1))][k-1]));
+         }
+     }
+}
+
+
+QUESTION - 1731D

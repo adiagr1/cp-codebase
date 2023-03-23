@@ -1,0 +1,35 @@
+    vi next(n,n), prev(n,-1);
+
+    stack<lli> s;
+
+    rep(i,0,n)
+    {
+        if(s.empty())
+        {
+            s.push(i);
+            continue;
+        }
+        while(!s.empty() && a[s.top()]<a[i])    // EDIT : a[s.top()]>a[i] for previous smaller
+        {
+            next[s.top()] = i;
+            s.pop();
+        }
+        s.push(i);
+    }
+ 
+    while(!s.empty()) s.pop();
+ 
+    per(i,n-1,0)
+    {
+        if(s.empty())
+        {
+            s.push(i);
+            continue;
+        }
+        while(!s.empty() && a[s.top()]<a[i])   // EDIT : a[s.top()]>a[i] for next smaller
+        {
+            prev[s.top()] = i;
+            s.pop();
+        }
+        s.push(i);
+    }

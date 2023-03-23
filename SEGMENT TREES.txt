@@ -1,0 +1,401 @@
+METHOD 1 : POINT UPD
+
+const lli N = 1e5;
+lli a[N],seg[4*N];
+// pass : idx = 0 , low = 0 , high = n-1
+void build(lli idx,lli low,lli high){
+    if(low==high){
+        seg[idx]=a[low];
+        return;
+    }
+    lli mid=(low+high)/2;
+    build(2*idx+1,low,mid);
+    build(2*idx+2,mid+1,high);
+    seg[idx] = (seg[2*idx+1]+seg[2*idx+2]);                    //change function according to need
+}
+// pass : idx = 0 , low = 0 , high = n-1 , l , r
+lli query(lli idx,lli low,lli high,lli l,lli r){
+    if(low>=l&&high<=r){
+        return seg[idx];
+    }
+    if(high<l||low>r){
+        return 0;
+    }
+    lli mid=(low+high)>>1;
+    lli left = query(2*idx+1,low,mid,l,r);
+    lli right = query(2*idx+2,mid+1,high,l,r);
+    return (left+right);                                       //change function according to need
+}
+// pass : idx = 0 , low = 0 , high = n-1 , node , val
+void update(lli idx,lli low,lli high,lli node,lli val){
+    if(low==high){
+        seg[idx] += val;                                      
+        return;
+    }
+    lli mid = (low+high)>>1;
+    if(node<=mid&&node>=low) update(2*idx+1,low,mid,node,val);
+    else update(2*idx+2,mid+1,high,node,val);
+    seg[idx]=seg[2*idx+1]+seg[2*idx+2];                             // change function according to need
+
+}
+
+//INSIDE SOLVE
+lli n;
+cin>>n;
+rep(i,0,n)
+{
+    cin>>a[i];
+}
+build(0,0,n-1);
+cout<<endl;
+lli q;
+cin>>q;
+while(q--)
+{
+    lli t;
+    cin>>t;
+    if(t==1)
+    {
+        lli l,r;
+        cin>>l>>r;
+        cout<<query(0,0,n-1,l,r)<<endl;
+    }
+    else
+    {
+        lli node,val;
+        cin>>node>>val;
+        update(0,0,n-1,node,val);
+     }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+METHOD 2 : RANGE UPDATE IF YOU WANT TO SET THE VALUE OF L...R += VAL
+
+const lli N = 1e5+10;
+lli a[N],seg[4*N],lazy[4*N];
+
+// pass : idx = 0(denotes seg arr idx) , low = 0(denotes the low of range which seg[idx] stores) , high = n-1(denotes the high of range which seg[idx] stores);
+void build(lli idx,lli low,lli high){
+    if(low==high){
+        seg[idx]=a[low];
+        return;
+    }
+    lli mid=(low+high)/2;
+    build(2*idx+1,low,mid);
+    build(2*idx+2,mid+1,high);
+    seg[idx] = (seg[2*idx+1]+seg[2*idx+2]);    // change function according to need
+}
+// pass : idx = 0 , low = 0 , high = n-1 , l , r , val
+void rangeUpdate(lli idx,lli low,lli high,lli l,lli r,lli val) // l,r increase value of elements by val
+{
+    if(lazy[idx]!=0)
+    {
+        seg[idx] += (high-low+1)*lazy[idx];              // change function according to need
+        if(low!=high)
+        {
+            lazy[2*idx+1] += lazy[idx];                  // change function according to need
+            lazy[2*idx+2] += lazy[idx];                  // change function according to need
+        }
+        lazy[idx] = 0;
+    }
+
+    if(r<low || l>high || low>high) return;
+    
+    if(low>=l && high<=r)
+    {
+        seg[idx] += (high-low+1)*val;
+        if(low!=high)
+        {
+            lazy[2*idx+1] += val;                        // change function according to need
+            lazy[2*idx+2] += val;                        // change function according to need
+        }   
+        return;
+    }
+
+    lli m = (low+high)>>1;
+    rangeUpdate(2*idx+1,low,m,l,r,val);
+    rangeUpdate(2*idx+2,m+1,high,l,r,val);
+    seg[idx] = seg[2*idx+1] + seg[2*idx+2];     // change function according to need
+}
+// pass : idx = 0 , low = 0 , high = n-1 , l , r
+lli querySumLazy(lli idx,lli low,lli high,lli l,lli r)
+{
+    if(lazy[idx]!=0)
+    {
+        seg[idx] += (high-low+1)*lazy[idx];    // change function according to need
+        if(low!=high)
+        {
+            lazy[2*idx+1] += lazy[idx];        // change function according to need
+            lazy[2*idx+2] += lazy[idx];        // change function according to need
+        }
+        lazy[idx]=0;
+    }
+
+    if(r<low || l>high || low>high) return 0;
+
+    if(low>=l && high<=r)
+    {
+        return seg[idx];
+    }
+
+    lli m = (low+high)>>1;
+
+    return querySumLazy(2*idx+1,low,m,l,r)+querySumLazy(2*idx+2,m+1,high,l,r);     // change function according to need
+}
+// INSIDE SOLVE
+lli n;
+cin>>n;
+rep(i,0,n)
+{
+   cin>>a[i];
+}
+build(0,0,n-1);
+lli q;
+cin>>q;
+//for(lli i=0;i<4*n;i++) cout<<seg[i]<<" ";
+while(q--)
+{
+   lli t;
+   cin>>t;
+   if(t==1)
+   {
+       lli l,r;
+       cin>>l>>r;
+       cout<<querySumLazy(0,0,n-1,l,r)<<endl;
+   }
+   else
+   {
+        lli l,r,val;
+        cin>>l>>r>>val;
+        rangeUpdate(0,0,n-1,l,r,val);
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+METHOD 3: RANGE UPDATE IF YOU WANT TO SET THE VALUE OF L...R WITH VAL (INSTEAD OF DOING A[L...R] += VAL IT DOES A[L...R] = VAL)
+
+const lli N = 1e5+10;
+lli a[N],seg[4*N],lazy[4*N];
+
+// pass : idx = 0(denotes seg arr idx) , low = 0(denotes the low of range which seg[idx] stores) , high = n-1(denotes the high of range which seg[idx] stores);
+void build(lli idx,lli low,lli high){
+    if(low==high){
+        seg[idx]=a[low];
+        return;
+    }
+    lli mid=(low+high)/2;
+    build(2*idx+1,low,mid);
+    build(2*idx+2,mid+1,high);
+    seg[idx] = (seg[2*idx+1]+seg[2*idx+2]);    // change function according to need
+}
+// pass : idx = 0 , low = 0 , high = n-1 , l , r , val
+void rangeUpdate(lli idx,lli low,lli high,lli l,lli r,lli val) // l,r increase value of elements by val
+{
+    if(lazy[idx]!=0)
+    {
+        seg[idx] = (high-low+1)*lazy[idx];              // change function according to need
+        if(low!=high)
+        {
+            lazy[2*idx+1] = lazy[idx];                  // change function according to need
+            lazy[2*idx+2] = lazy[idx];                  // change function according to need
+        }
+        lazy[idx] = 0;
+    }
+
+    if(r<low || l>high || low>high) return;
+    
+    if(low>=l && high<=r)
+    {
+        seg[idx] = (high-low+1)*val;
+        if(low!=high)
+        {
+            lazy[2*idx+1] = val;                        // change function according to need
+            lazy[2*idx+2] = val;                        // change function according to need
+        }   
+        return;
+    }
+
+    lli m = (low+high)>>1;
+    rangeUpdate(2*idx+1,low,m,l,r,val);
+    rangeUpdate(2*idx+2,m+1,high,l,r,val);
+    seg[idx] = seg[2*idx+1] + seg[2*idx+2];     // change function according to need
+}
+// pass : idx = 0 , low = 0 , high = n-1 , l , r
+lli querySumLazy(lli idx,lli low,lli high,lli l,lli r)
+{
+    if(lazy[idx]!=0)
+    {
+        seg[idx] = (high-low+1)*lazy[idx];    // change function according to need
+        if(low!=high)
+        {
+            lazy[2*idx+1] = lazy[idx];        // change function according to need
+            lazy[2*idx+2] = lazy[idx];        // change function according to need
+        }
+        lazy[idx]=0;
+    }
+
+    if(r<low || l>high || low>high) return 0;
+
+    if(low>=l && high<=r)
+    {
+        return seg[idx];
+    }
+
+    lli m = (low+high)>>1;
+
+    return querySumLazy(2*idx+1,low,m,l,r)+querySumLazy(2*idx+2,m+1,high,l,r);     // change function according to need
+}
+
+// INSIDE SOLVE
+lli n;
+cin>>n;
+rep(i,0,n)
+{
+   cin>>a[i];
+}
+build(0,0,n-1);
+lli q;
+cin>>q;
+//for(lli i=0;i<4*n;i++) cout<<seg[i]<<" ";
+while(q--)
+{
+   lli t;
+   cin>>t;
+   if(t==1)
+   {
+       lli l,r;
+       cin>>l>>r;
+       cout<<querySumLazy(0,0,n-1,l,r)<<endl;
+   }
+   else
+   {
+        lli l,r,val;
+        cin>>l>>r>>val;
+        rangeUpdate(0,0,n-1,l,r,val);
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+METHOD 4: POINT UPDATE IF YOU WANT TO CHANGE THE VALUE OF POSITION X = VAL (INSTEAD OF DOING A[X] += VAL IT DOES A[X] = VAL)
+
+
+
+const lli N = 1e5;
+lli a[N],seg[4*N];
+// pass : idx = 0 , low = 0 , high = n-1
+void build(lli idx,lli low,lli high){
+    if(low==high){
+        seg[idx]=a[low];
+        return;
+    }
+    lli mid=(low+high)/2;
+    build(2*idx+1,low,mid);
+    build(2*idx+2,mid+1,high);
+    seg[idx] = (seg[2*idx+1]+seg[2*idx+2]);                    //change function according to need
+}
+// pass : idx = 0 , low = 0 , high = n-1 , l , r
+lli query(lli idx,lli low,lli high,lli l,lli r){
+    if(low>=l&&high<=r){
+        return seg[idx];
+    }
+    if(high<l||low>r){
+        return 0;
+    }
+    lli mid=(low+high)>>1;
+    lli left = query(2*idx+1,low,mid,l,r);
+    lli right = query(2*idx+2,mid+1,high,l,r);
+    return (left+right);                                       //change function according to need
+}
+// pass : idx = 0 , low = 0 , high = n-1 , node , val
+void update(lli idx,lli low,lli high,lli node,lli val){
+    if(low==high){
+        seg[idx] = val;                                      
+        return;
+    }
+    lli mid = (low+high)>>1;
+    if(node<=mid&&node>=low) update(2*idx+1,low,mid,node,val);
+    else update(2*idx+2,mid+1,high,node,val);
+    seg[idx]=seg[2*idx+1]+seg[2*idx+2];                             // change function according to need
+
+}
